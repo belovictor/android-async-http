@@ -48,14 +48,13 @@ class AsyncHttpRequest implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         try {
             if(responseHandler != null){
                 responseHandler.sendStartMessage();
             }
-
             makeRequestWithRetries();
-
             if(responseHandler != null) {
                 responseHandler.sendFinishMessage();
             }
@@ -79,7 +78,7 @@ class AsyncHttpRequest implements Runnable {
         			if(responseHandler != null) {
         				responseHandler.sendResponseMessage(response);
         			}
-        		} else{
+        		} else {
         			//TODO: should raise InterruptedException? this block is reached whenever the request is cancelled before its response is received
         		}
         	} catch (IOException e) {
@@ -118,6 +117,12 @@ class AsyncHttpRequest implements Runnable {
                 return;
             } catch (IOException e) {
                 cause = e;
+                if (request.isAborted()) {
+                    if(responseHandler != null) {
+                        responseHandler.sendFailureMessage(e, "request aborted");
+                    }
+                    return;
+                }
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
             } catch (NullPointerException e) {
                 // there's a bug in HttpClient 4.0.x that on some occasions causes
@@ -132,5 +137,9 @@ class AsyncHttpRequest implements Runnable {
         ConnectException ex = new ConnectException();
         ex.initCause(cause);
         throw ex;
+    }
+
+    public HttpUriRequest getRequest() {
+        return request;
     }
 }
