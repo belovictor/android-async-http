@@ -330,9 +330,9 @@ public class AsyncHttpClient {
                         }
                     }
                     // If tag is not null, remove the associated record from the list
-                    if (tag != null) {
-                        requestList.remove(requestPoolRecord);
-                    }
+//                    if (tag != null) {
+//                        requestList.remove(requestPoolRecord);
+//                    }
                 }
             }
         }

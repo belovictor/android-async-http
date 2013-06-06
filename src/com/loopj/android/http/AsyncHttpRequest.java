@@ -119,7 +119,7 @@ class AsyncHttpRequest implements Runnable {
                 cause = e;
                 if (request.isAborted()) {
                     if(responseHandler != null) {
-                        responseHandler.sendFailureMessage(e, "request aborted");
+                        responseHandler.sendFailureMessage(new AsyncHttpAbortException("Request aborted"), "request aborted");
                     }
                     return;
                 }
